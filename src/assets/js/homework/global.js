@@ -501,6 +501,32 @@ define(['components/domReady', 'components/flexbox_fallback', 'components/placeh
 
           	/* buttons span */
           	$('.btn').wrapInner('<span />');
+
+			// Web Vitals → dataLayer (for GTM)
+			if (window.webVitals) {
+				window.dataLayer = window.dataLayer || [];
+
+				function sendToDataLayer(metric) {
+					var value = metric.name === 'CLS'
+						? Math.round(metric.value * 1000)
+						: Math.round(metric.value);
+
+					window.dataLayer.push({
+						event: 'web_vital',
+						web_vital_name: metric.name,
+						web_vital_value: value,
+						web_vital_id: metric.id,
+						web_vital_delta: metric.delta,
+						web_vital_rating: metric.rating
+					});
+				}
+
+				webVitals.onCLS(sendToDataLayer);
+				webVitals.onFCP(sendToDataLayer);
+				webVitals.onINP(sendToDataLayer);
+				webVitals.onLCP(sendToDataLayer);
+				webVitals.onTTFB(sendToDataLayer);
+			}
       	}
   	};
   
